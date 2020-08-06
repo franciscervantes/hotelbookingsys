@@ -1,0 +1,54 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+
+{% block javascript %}
+
+<!--   <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js">
+  </script> -->
+  
+
+
+{% endblock %}
+
+{% block content %}
+  <h1 class="page-header">Reservations</h1>
+
+<!--   <p>
+    <button type="button" class="btn btn-primary js-create-book" data-url="">
+      <span class="glyphicon glyphicon-plus"></span>
+      New book
+    </button>
+  </p>
+ -->
+  <table class="table" id="reserve-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Room Type</th>
+        <th>Room Number</th>
+      <!--   <th>Room ID</th> -->
+        <th>Date-in</th>
+        <th>Date-out</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+     {% include 'view_reservations_list.html' %}
+    </tbody>
+  </table>
+  
+  <div class="modal fade" id="modal-reserve">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+
+   
+{% endblock %}

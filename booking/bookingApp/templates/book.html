@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+ 
+</head>
+
+
+<body>
+
+{% block content %}
+
+<form id ="reservation-form" action="" method="post" data-ajax-target="{% url 'create_reservation' %}">
+{% csrf_token %}
+{{ reservation_form.as_p}}
+<input type="submit" value="Submit">
+
+{% for room in room_type %}
+
+<div class = "room_details" id = "{{room.room_type_id}}">
+	{{room.type_name}} : {{room.price}}
+
+</div>
+
+{% endfor %}
+{% endblock %}
+
+<!-- {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %} -->
+ <script type="text/javascript">     window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+<script src="{% static 'js/app.js' %}"></script>
+
+
+<script>
+    function init(){
+        room = document.getElementById("id_room_id").value
+        document.getElementById(room).style.display = "block";
+    }
+
+    window.onload = function() {
+        init();
+    };  
+    function showRoom(value){
+        hideDivs = document.getElementsByClassName("room_details");
+        for(var i = 0; i < hideDivs.length; i++){
+            hideDivs[i].style.display = "none"; 
+    }
+
+    document.getElementById(value).style.display = "block";
+
+
+
+}
+</script>
+
+
+</body>
+</html>
+

@@ -1,0 +1,14 @@
+
+{% extends 'admin_base.html' %}
+
+{% if user.is_authenticated %}
+
+Welcome,  {{ user.username }}!
+
+
+<a href= {% url 'admin_logout' %}> Log out</a>
+{% endif %}
+
+
+
+

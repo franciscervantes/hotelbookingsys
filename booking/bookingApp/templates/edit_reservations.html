@@ -1,0 +1,94 @@
+{% load static %}
+
+
+
+
+<form method="post" data-url="{% url 'edit_reservation' reservation_id=reservation_form.instance.pk %}" class="js-reserve-update-form">
+  {% csrf_token %}
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Update book</h4>
+  </div>
+  <div class="modal-body">
+    {% include 'reservation_form.html' %}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">Update book</button>
+  </div>
+</form>
+
+  
+<script type="text/javascript">
+
+  $(function () {
+     $("#datein").datepicker({
+         minDate: 0,
+         dateFormat: "yy-mm-dd",
+         changeMonth: true,
+         numberOfMonths: 1,
+         changeYear: true,
+         onClose: function (selectedDate, inst) {
+             var minDate = new Date(Date.parse(selectedDate));
+             minDate.setDate(minDate.getDate() + 1);
+             $("#dateout").datepicker("option", "minDate", minDate);
+         }
+     });
+
+     $("#dateout").datepicker({
+         minDate: "+1D",
+         dateFormat: "yy-mm-dd",
+         changeMonth: true,
+         numberOfMonths: 1,
+         changeYear: true,
+         onClose: function (selectedDate, inst) {
+             var maxDate = new Date(Date.parse(selectedDate));
+             maxDate.setDate(maxDate.getDate() - 1);
+             $("#datein").datepicker("option", "maxDate", maxDate);
+         }
+     });
+     // $("#id_room_id").value()
+ });
+
+
+ var saveForm = function () {
+    console.log("here");
+    var form = $(this);
+    $.ajax({
+      url: form.attr("data-url"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        console.log("nani");
+        if (data.status == "created") {
+          console.log("dfsdf")
+          // toastr.success('Successfully Updated');
+          // alert("dasdadss")
+          $("#reserve-table tbody").html(data.reservation_list,  toastr.success('Successfully Updated'));
+          $("#modal-reserve").modal("hide");
+
+
+        }
+        else {
+          console.log("nani2");
+          toastr.error('Not Updated: Room is unavailable');
+          $("#modal-reserve .modal-content").html(data.html_form);
+        }
+      },
+       failure: function() {
+           console.log("error");
+       }
+    });
+    return false;
+  };
+
+  /* Binding */
+
+  // Update book
+  // $("#reserve-table").on("click", ".js-update-reserve", loadForm);
+  $(".js-reserve-update-form").on("submit", saveForm);
+</script>
+
