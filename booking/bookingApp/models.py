@@ -26,6 +26,8 @@ class RoomType(models.Model):
     room_type_id = models.AutoField(primary_key=True)
     type_name = models.CharField(max_length=64)
     price = models.IntegerField()
+    details = models.CharField(max_length=1024)
+    image = models.ImageField(upload_to = 'media/', default = '')
 
     class Meta:
         db_table = 'room_type'

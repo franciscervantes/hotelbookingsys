@@ -3,9 +3,10 @@
     <td>{{ roomtype.room_type_id }}</td>
     <td>{{ roomtype.type_name }}</td>
     <td>{{ roomtype.price }}</td>
+    <td style="max-width: 300px; word-wrap: break-word;">{{ roomtype.details }}</td>
   
     <!-- <td>{{ reservation.price }}</td> -->
-    <td style="width: 150px">
+    <td style="width: 200px">
       <button type="button"
               class="btn btn-warning btn-sm js-update-reserve"
               data-url="{% url 'edit_roomtype' room_type_id=roomtype.room_type_id %}"> 

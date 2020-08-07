@@ -187,11 +187,20 @@ def deleteReservation(request, reservation_id):
 def createRoomtype(request):
 	data =  dict()
 	if request.method == 'POST':
-		roomtype_form = RoomTypeForm(request.POST)
+		roomtype_form = RoomTypeForm(request.POST, request.FILES)
 		type_name = request.POST.get('type_name')
-		if roomtype_form.is_valid() and not RoomType.objects.filter(type_name=type_name).exists():
+		price = request.POST.get('price')
+		details = request.POST.get('details')
+		image = request.FILES.get('image')
+		if  not RoomType.objects.filter(type_name=type_name).exists():
 			print("hi")
-			roomtype_form.save()
+			roomtype = RoomType(
+				type_name = type_name,
+				price = price,
+				details = details,
+				image =   image
+				)
+			roomtype.save()
 			data['status'] = "created roomtype"
 			roomtype_list = RoomType.objects.all()
 			data['room_type_list'] = render_to_string('view_roomtype_list.html', { 'roomtypes': roomtype_list})
@@ -215,13 +224,19 @@ def editRoomtype(request, room_type_id):
 		roomtype_form = RoomTypeForm(instance=roomtype)
 		type_name = request.POST.get('type_name')
 		price = request.POST.get('price')
+		details = request.POST.get('details')
+		image =  request.FILES.get('image')
+
 		if not RoomType.objects.filter(type_name=type_name).exclude(pk=room_type_id).exists():	
 			roomtype.type_name = type_name
 			roomtype.price = price
+			roomtype.details = details
+			roomtype.image = image
 			roomtype.save()
 			data['status'] ="edited roomtype"
 			roomtype_list = RoomType.objects.all()
 			print(data['status'])
+			# data['image_url'] = roomtype.image.url
 			data['room_type_list'] = render_to_string('view_roomtype_list.html', { 'roomtypes': roomtype_list})
 		else:
 			data['status'] = 'invalid roomtype'
@@ -286,6 +301,7 @@ def editRoom(request, room_id):
 		room_form = RoomForm(instance=room)
 		room_num = request.POST.get('room_num')
 		room_type_id = request.POST.get('room_type_id')
+
 		room_type = get_object_or_404(RoomType, pk=room_type_id)
 		print(room_type)
 		if not Room.objects.filter(room_num=room_num).exclude(pk=room_id).exists():	

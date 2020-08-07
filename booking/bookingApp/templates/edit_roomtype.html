@@ -3,7 +3,7 @@
 
 
 
-<form method="post" data-url="{% url 'edit_roomtype' room_type_id=roomtype_form.instance.pk %}" class="js-reserve-update-form">
+<form method="post" data-url="{% url 'edit_roomtype' room_type_id=roomtype_form.instance.pk %}" class="js-roomtype-create-form">
   {% csrf_token %}
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

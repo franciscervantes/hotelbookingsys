@@ -21,6 +21,9 @@ class ReservationForm(forms.ModelForm):
 
 
 class RoomTypeForm(forms.ModelForm):
+	details= forms.CharField(widget=forms.Textarea)
+	image = forms.ImageField()
+
 	class Meta:
 		model = RoomType
 		fields = '__all__'
@@ -28,6 +31,7 @@ class RoomTypeForm(forms.ModelForm):
 class RoomForm(forms.ModelForm):
 	room_num = forms.CharField(label='Room Number', max_length=128)
 	room_type_id = forms.ModelChoiceField(queryset=RoomType.objects.all() ,initial=0, label="Room Type")
+
 	class Meta:
 		model = RoomType
 		fields = ['room_num', 'room_type_id']

@@ -22,7 +22,7 @@ app_name = 'booking'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.homepage),
+    path('', views.homepage, name='homepage'),
     path('book/',views.book, name='book'),
     path('staff/login/', views.adminLogin, name='admin_login'),
     path('staff/dashboard/', views.adminDash, name='admin_dash'),
@@ -43,4 +43,6 @@ urlpatterns = [
     
 
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,3 +1,8 @@
+body{margin:0; padding:0;}
+.booking{
+    background-color: aliceblue;
+}
+
 .room_details{
 
 	display:none;
@@ -17,7 +22,7 @@
 .ui-widget-content {
     /*background: #feeebd url("/themeroller/images/ui-bg_highlight-soft_100_feeebd_1x100.png") repeat-x scroll 50% top;*/
     background-color: orange;
-    border: 1px solid #8e846b;
+    /*border: 1px solid #8e846b;*/
     color: #383838;
 }
 .ui-widget-content a {

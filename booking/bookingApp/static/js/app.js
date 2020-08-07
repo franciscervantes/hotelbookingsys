@@ -70,7 +70,7 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
 
           else{
 
-            toastr.error('Invalid Dates')
+            toastr.error('Invalid Dates or Room Type Unavailable')
           }
        },
 
@@ -127,22 +127,6 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
         }else if(data.status =='invalid_delete'){
           toastr.error('Invalid Deletion');
           $("#modal-reserve .modal-content").html(data.html_form);
-        }else if(data.status == 'edited roomtype'){
-          toastr.success('Roomtype Successfully Edited');
-          $("#reserve-table tbody").html(data.room_type_list);
-          $("#modal-reserve").modal("hide");
-        }else if(data.status == 'created roomtype'){
-          toastr.success('Roomtype Successfully Created');
-          $("#reserve-table tbody").html(data.room_type_list);
-          $("#modal-reserve").modal("hide");
-        }else if(data.status == 'invalid roomtype'){
-          toastr.error('Invalid Roomtype or Roomtype with the same name already exists');
-          $("#reserve-table tbody").html(data.room_type_list);
-          $("#modal-reserve").modal("hide");
-        }else if(data.status == 'deleted roomtype'){
-          toastr.success('Roomtype Successfully Deleted');
-          $("#reserve-table tbody").html(data.roomtype_list);
-          $("#modal-reserve").modal("hide");
         }else if(data.status == 'created room'){
           toastr.success('Room Successfully Created');
           $("#reserve-table tbody").html(data.room_list);
@@ -176,6 +160,65 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
   };
 
 
+var saveRoomType = function () {
+    console.log("here");
+    var form = $(this);
+    var token = form.find('input[name=csrfmiddlewaretoken]').val();
+    var formData = new FormData();
+    $image = $('#id_image')[0].files[0];
+    $type_name = $('#id_type_name').val();
+    $price = $('#id_price').val();
+    $details = $('#id_details').val()
+    formData.append('image', $image);
+    formData.append('type_name', $type_name)
+    formData.append('price', $price)
+    formData.append('details', $details)
+
+    formData.append('csrfmiddlewaretoken', token);
+    // console.log(token);
+    $.ajax({
+      url: form.attr("data-url"),
+      data: formData,
+      type: form.attr("method"),
+      csrfmiddlewaretoken: token,
+      dataType: 'json',
+      
+      success: function (data) {
+        console.log(data.status);
+        if(data.status == 'edited roomtype'){
+          toastr.success('Roomtype Successfully Edited');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'created roomtype'){
+          toastr.success('Roomtype Successfully Created');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'invalid roomtype'){
+          toastr.error('Invalid Roomtype or Roomtype with the same name already exists');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'deleted roomtype'){
+          toastr.success('Roomtype Successfully Deleted');
+          $("#reserve-table tbody").html(data.roomtype_list);
+          $("#modal-reserve").modal("hide");
+        }
+
+        
+        else {
+          // console.log("nani2");
+          toastr.error('Invalid');
+          $("#modal-reserve .modal-content").html(data.html_form);
+        }
+      },
+            cache: false,
+            contentType: false,
+            processData: false,
+       failure: function() {
+           console.log("error");
+       }
+    });
+    return false;
+  };
 
 
   /* Binding */
@@ -189,3 +232,6 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
   // Delete book
   $("#reserve-table").on("click", ".js-delete-reserve", loadForm);
   $("#modal-reserve").on("submit", ".js-reserve-delete-form", saveForm);
+
+    $(".js-create-reserve").click(loadForm);
+  $("#modal-reserve").on("submit", ".js-roomtype-create-form", saveRoomType);
