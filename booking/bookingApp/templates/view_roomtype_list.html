@@ -1,0 +1,25 @@
+{% for roomtype in roomtypes %}
+  <tr>
+    <td>{{ roomtype.room_type_id }}</td>
+    <td>{{ roomtype.type_name }}</td>
+    <td>{{ roomtype.price }}</td>
+  
+    <!-- <td>{{ reservation.price }}</td> -->
+    <td style="width: 150px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-reserve"
+              data-url="{% url 'edit_roomtype' room_type_id=roomtype.room_type_id %}"> 
+        <span class="glyphicon glyphicon-pencil"></span> Edit
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-reserve"
+              data-url="{% url 'delete_roomtype' room_type_id=roomtype.room_type_id %}"> 
+        <span class="glyphicon glyphicon-trash"></span> Delete
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No reservations</td>
+  </tr>
+{% endfor %}

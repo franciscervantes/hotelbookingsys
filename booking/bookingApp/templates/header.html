@@ -11,8 +11,11 @@
     </div>
     <div class="collapse navbar-collapse" id="main-menu">
       <ul class="nav navbar-nav">
-        <li{% if request.path == '/reservations/' %} class="active"{% endif %}>
+        <li{% if request.path == '/staff/reservation-list/' %} class="active"{% endif %}>
           <a href="{% url 'reservation_list' %}">Reservations</a>
+        </li>
+         <li{% if request.path == '/staff/roomtype-list/' %} class="active"{% endif %}>
+          <a href="{% url 'roomtype_list' %}">Room Types</a>
         </li>
         {% if user.is_authenticated %}
         <li>

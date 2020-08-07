@@ -34,7 +34,7 @@ class RoomType(models.Model):
 
 class Room(models.Model):
     room_id = models.AutoField(primary_key=True)
-    room_type_id = models.ForeignKey('RoomType', on_delete=models.DO_NOTHING)
+    room_type_id = models.ForeignKey('RoomType', on_delete=models.CASCADE)
     room_status = models.CharField(max_length=128)
     room_num = models.IntegerField(blank=True, null=True)
 

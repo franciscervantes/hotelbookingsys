@@ -1,0 +1,46 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+
+{% block javascript %}
+
+<!--   <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js">
+  </script> -->
+  
+
+
+{% endblock %}
+
+{% block content %}
+  <h1 class="page-header">Room Types</h1>
+
+  <p>
+    <button type="button" class="btn btn-primary js-create-reserve" data-url="{% url 'create_roomtype' %}">
+      <span class="glyphicon glyphicon-plus"></span>
+      New Room Type
+    </button>
+  </p>
+
+  <table class="table" id="reserve-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Type Name</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% include 'view_roomtype_list.html' %}
+    </tbody>
+  </table>
+  
+  <div class="modal fade" id="modal-reserve">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+
+   
+{% endblock %}

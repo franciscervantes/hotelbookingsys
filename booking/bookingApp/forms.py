@@ -5,8 +5,6 @@ class DateInput(forms.DateInput):
 
 class ReservationForm(forms.ModelForm):
 	
-
-	
 	first_name = forms.CharField(label='First name', max_length=128)
 	last_name =  forms.CharField(label='Last name', max_length=128)
 	client_email = forms.CharField(label='Email', max_length=128)
@@ -22,9 +20,10 @@ class ReservationForm(forms.ModelForm):
 		fields=['first_name', 'last_name', 'client_email', 'client_phone', 'room_id', 'date_in', 'date_out']
 
 
-
-
-
+class RoomTypeForm(forms.ModelForm):
+	class Meta:
+		model = RoomType
+		fields = '__all__'
 
 
 

@@ -115,24 +115,38 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
-        console.log("nani");
+        console.log(data.status);
         if (data.status == "created") {
-          toastr.success('Successfully created');
+          toastr.success('Reservation Successfully Updated');
           $("#reserve-table tbody").html(data.reservation_list);
           $("#modal-reserve").modal("hide");
-
-
         }else if(data.status == 'deleted'){
-          toastr.success('Successfully deleted');
+          toastr.success('Reservation Successfully Deleted');
           $("#reserve-table tbody").html(data.reservation_list);
           $("#modal-reserve").modal("hide");
         }else if(data.status =='invalid_delete'){
           toastr.error('Invalid Deletion');
           $("#modal-reserve .modal-content").html(data.html_form);
-        }
+        }else if(data.status == 'edited roomtype'){
+          toastr.success('Roomtype Successfully Edited');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'created roomtype'){
+          toastr.success('Roomtype Successfully Created');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'invalid roomtype'){
+          toastr.error('Invalid Roomtype or Roomtype with the same name already exists');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'deleted roomtype'){
+          toastr.success('Roomtype Successfully Deleted');
+          $("#reserve-table tbody").html(data.roomtype_list);
+          $("#modal-reserve").modal("hide");}
+        
         else {
-          console.log("nani2");
-          toastr.error('Invalid Edit');
+          // console.log("nani2");
+          toastr.error('Invalid');
           $("#modal-reserve .modal-content").html(data.html_form);
         }
       },
@@ -147,6 +161,8 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
 
 
   /* Binding */
+  $(".js-create-reserve").click(loadForm);
+  $("#modal-reserve").on("submit", ".js-reserve-create-form", saveForm);
 
   // Update book
   $("#reserve-table").on("click", ".js-update-reserve", loadForm);
