@@ -142,7 +142,25 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
         }else if(data.status == 'deleted roomtype'){
           toastr.success('Roomtype Successfully Deleted');
           $("#reserve-table tbody").html(data.roomtype_list);
-          $("#modal-reserve").modal("hide");}
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'created room'){
+          toastr.success('Room Successfully Created');
+          $("#reserve-table tbody").html(data.room_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'invalid room'){
+          toastr.error('Room with the same Room Number already exists');
+          $("#reserve-table tbody").html(data.room_type_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'edited room'){
+          toastr.success('Room Successfully Edited');
+          $("#reserve-table tbody").html(data.room_list);
+          $("#modal-reserve").modal("hide");
+        }else if(data.status == 'deleted room'){
+          toastr.success('Room Successfully Deleted');
+          $("#reserve-table tbody").html(data.room_list);
+          $("#modal-reserve").modal("hide");
+        }
+
         
         else {
           // console.log("nani2");

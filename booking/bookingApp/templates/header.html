@@ -17,6 +17,9 @@
          <li{% if request.path == '/staff/roomtype-list/' %} class="active"{% endif %}>
           <a href="{% url 'roomtype_list' %}">Room Types</a>
         </li>
+         <li{% if request.path == '/staff/room-list/' %} class="active"{% endif %}>
+          <a href="{% url 'room_list' %}">Rooms</a>
+        </li>
         {% if user.is_authenticated %}
         <li>
              <a> Welcome,  {{ user.username }}!</a>

@@ -250,6 +250,77 @@ def deleteRoomtype(request, room_type_id):
 			data['html_form'] = render_to_string('delete_roomtype.html', context, request=request)
 		return JsonResponse(data)
 
+@login_required
+def createRoom(request):
+	data =  dict()
+	if request.method == 'POST':
+		room_form = RoomForm(request.POST)
+		room_num = request.POST.get('room_num')
+		room_type_id = request.POST.get('room_type_id')
+		# room_type = RoomType.objects.filter(pk=room_type_id)
+		room_type = get_object_or_404(RoomType, pk=room_type_id)
+
+		if not Room.objects.filter(room_num=room_num).exists():
+			print("helO")
+			room = Room(
+				room_num = room_num,
+				room_type_id = room_type
+				)
+			room.save()
+			data['status'] = "created room"
+			room_list = Room.objects.all()
+			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+		else:
+			data['status'] = "invalid room"
+	else:
+		room_form = RoomForm()
+	context = {'room_form' : room_form}
+	data['html_form'] = render_to_string('create_room.html', context, request=request)
+	return JsonResponse(data)
+
+@login_required
+def editRoom(request, room_id):
+	room = get_object_or_404(Room, pk=room_id)
+	data = dict()
+	if request.method == 'POST':
+		room_form = RoomForm(instance=room)
+		room_num = request.POST.get('room_num')
+		room_type_id = request.POST.get('room_type_id')
+		room_type = get_object_or_404(RoomType, pk=room_type_id)
+		print(room_type)
+		if not Room.objects.filter(room_num=room_num).exclude(pk=room_id).exists():	
+			room.room_num = room_num
+			room.room_type_id = room_type
+			room.save()
+			data['status'] ="edited room"
+			room_list = Room.objects.all()
+			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+		else:
+			data['status'] = 'invalid room'
+
+	
+	else:
+		room_form = RoomForm(instance=room)
+	context = {'room_form': room_form}
+	data['html_form'] = render_to_string('edit_room.html', context, request=request)
+	return JsonResponse(data)
+
+@login_required
+def deleteRoom(request, room_id):
+	if request.user.is_authenticated:
+		room = get_object_or_404(Room, pk=room_id)
+		data = dict()
+		if request.method == 'POST':
+			room.delete()
+			room_list = Room.objects.all()
+			data['status'] = "deleted room"
+			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+		else:
+			context= {'room': room}
+			data['status'] = 'none'
+			data['html_form'] = render_to_string('delete_room.html', context, request=request)
+		return JsonResponse(data)
+
 
 
 
@@ -289,6 +360,10 @@ def reservations(request):
 def roomtypes(request):
 	roomtypes = RoomType.objects.all()
 	return render(request, 'roomtype_list.html', {'roomtypes':roomtypes})
+@login_required
+def room(request):
+	rooms = Room.objects.all()
+	return render(request, 'room_list.html', {'rooms':rooms})
 
 
 
