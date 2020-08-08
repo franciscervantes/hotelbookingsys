@@ -12,7 +12,8 @@ import json
 
 
 def homepage(request):
-	return render(request, 'home.html')
+	roomtypes = RoomType.objects.all()
+	return render(request, 'home.html', {'roomtypes':roomtypes})
 
 # @csrf_exempt
 def book(request):
@@ -226,6 +227,8 @@ def editRoomtype(request, room_type_id):
 		price = request.POST.get('price')
 		details = request.POST.get('details')
 		image =  request.FILES.get('image')
+		if not image:
+			image = roomtype.image
 
 		if not RoomType.objects.filter(type_name=type_name).exclude(pk=room_type_id).exists():	
 			roomtype.type_name = type_name
@@ -343,17 +346,19 @@ def deleteRoom(request, room_id):
 
 def adminLogin(request):
     if request.user.is_authenticated:
-        return render(request, 'admin_dash.html')
+        return render(request, 'admin_base.html')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return render(request,'admin_dash.html')
+            isValid = "yes"
+            return render(request,'admin_base.html', {'isValid': isValid})
         else:
             form = AuthenticationForm(request.POST)
-            return render(request, 'admin_login.html', {'form': form})
+            isValid = "no"
+            return render(request, 'admin_login.html', {'form': form, 'isValid': isValid})
     else:
         form = AuthenticationForm()
         return render(request, 'admin_login.html', {'form': form})
@@ -361,7 +366,7 @@ def adminLogin(request):
 @login_required
 def adminDash(request):
 	if request.user.is_authenticated:
-		return render(request, 'admin_dash.html')
+		return render(request, 'admin_base.html')
 
 def adminLogout(request):
     logout(request)

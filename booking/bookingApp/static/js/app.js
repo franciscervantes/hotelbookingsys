@@ -11,6 +11,15 @@
   //   });
   // });
 
+$(function() {
+  $('.login-form').animate({ height: '70vh' }, 1000, 'linear');
+
+});
+
+
+
+
+
 $(function () {
      $("#datein").datepicker({
          minDate: 0,
@@ -143,6 +152,10 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
           toastr.success('Room Successfully Deleted');
           $("#reserve-table tbody").html(data.room_list);
           $("#modal-reserve").modal("hide");
+        }else if(data.status == 'deleted roomtype'){
+          toastr.success('Roomtype Successfully Deleted');
+          $("#reserve-table tbody").html(data.roomtype_list);
+          $("#modal-reserve").modal("hide");
         }
 
         
@@ -197,10 +210,6 @@ var saveRoomType = function () {
           toastr.error('Invalid Roomtype or Roomtype with the same name already exists');
           $("#reserve-table tbody").html(data.room_type_list);
           $("#modal-reserve").modal("hide");
-        }else if(data.status == 'deleted roomtype'){
-          toastr.success('Roomtype Successfully Deleted');
-          $("#reserve-table tbody").html(data.roomtype_list);
-          $("#modal-reserve").modal("hide");
         }
 
         
@@ -235,3 +244,39 @@ var saveRoomType = function () {
 
     $(".js-create-reserve").click(loadForm);
   $("#modal-reserve").on("submit", ".js-roomtype-create-form", saveRoomType);
+
+
+  //search
+//   $("#searchInput").keyup(function () {
+//     //split the current value of searchInput
+//     var data = this.value.split(" ");
+//     //create a jquery object of the rows
+//     var jo = $("#fbody").find("tr");
+//     if (this.value == "") {
+//         jo.show();
+//         return;
+//     }
+//     //hide all the rows
+//     jo.hide();
+
+//     //Recusively filter the jquery object to get results.
+//     jo.filter(function (i, v) {
+//         var $t = $(this);
+//         for (var d = 0; d < data.length; ++d) {
+//             if ($t.text().toLowerCase().indexOf(data[d].toLowerCase()) > -1) {
+//                 return true;
+//             }
+//         }
+//         return false;
+//     })
+//     //show the rows that match.
+//     .show();
+// }).focus(function () {
+//     this.value = "";
+//     $(this).css({
+//         "color": "black"
+//     });
+//     $(this).unbind('focus');
+// }).css({
+//     "color": "#C0C0C0"
+// });

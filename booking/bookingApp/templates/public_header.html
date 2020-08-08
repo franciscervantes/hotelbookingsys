@@ -1,5 +1,8 @@
+
+
+
 <nav class="navbar navbar-default">
-  <div class="container">
+
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
@@ -7,13 +10,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'homepage' %}">Hotel Everblue</a>
+      <a class="navbar-brand cursive" href="/">The Lune Sanctuaire</a>
     </div>
     <div class="collapse navbar-collapse" id="main-menu">
-      <ul class="nav navbar-nav">
+       <ul class="nav navbar-nav navbar-right">
+      <!-- <li><a href="#contact">Admin</a></li> -->
+      <li style="border-left: solid 1px lightgrey; background-color: #493743">
+        <a href="{% url 'admin_login' %}"><span class="glyphicon glyphicon-user sand"></span></a>
+      </li>
+      
+    </ul>
     
-  
-      </ul>
-    </div>
   </div>
 </nav>

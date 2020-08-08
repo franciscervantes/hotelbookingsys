@@ -90,6 +90,12 @@
     }
 
     document.getElementById(value).style.display = "block";
+    $("#"+value).css({
+    "opacity":"0",
+    "display":"block",
+        }).show().animate({opacity:1})
+
+    
 
 
 

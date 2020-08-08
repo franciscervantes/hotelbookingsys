@@ -29,7 +29,7 @@ class RoomTypeForm(forms.ModelForm):
 		fields = '__all__'
 
 class RoomForm(forms.ModelForm):
-	room_num = forms.CharField(label='Room Number', max_length=128)
+	room_num = forms.IntegerField(label='Room Number')
 	room_type_id = forms.ModelChoiceField(queryset=RoomType.objects.all() ,initial=0, label="Room Type")
 
 	class Meta:

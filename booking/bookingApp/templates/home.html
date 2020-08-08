@@ -2,11 +2,87 @@
 <html>
 <head>
 	<title></title>
+
+	{% load static %}
+
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
 <body>
+	{% include 'public_header.html' %}
+	<div id="banner2">
+		
+	
 
-<a href= {% url 'admin_login' %}> Admin Login </a>
-<a href= {% url 'book' %}> Book </a>
+		<div id="banner-text">
+			<p><img   src="{% static 'img/logo.png' %}"></p>
+			<p><a class="btn btn-primary"  id ="bookbtn" href= {% url 'book' %}> Book Now </a></p>
+			
+		</div>
+	</div>
 
+<div class="container white-block" >
+
+<p >Welcome to <span class="cursive">	&nbsp;The Lune Sanctuaire</span></p>
+<p id="greet">	&ldquo; A paradise enchanted with comfort and relaxation	&ldquo;</p>
+</div>
+
+</div>
+
+	<div id="banner1">
+		
+	
+
+		<div id="banner-text">
+	
+			<!-- <a class="btn btn-primary" href= {% url 'book' %}> Book Now </a> -->
+			
+		</div>
+	</div>
+
+<div class="container white-block" >
+
+<div class="page-header">
+  <h1>Our Rooms </h1>
+</div>
+<div class="row">
+
+	{% for roomtype in roomtypes %}
+
+
+	<div class="col-md-4">
+    <div class="thumbnail" >
+      <img style="height: 30vh; width: 100%; object-fit: contain;" src="{{roomtype.image.url}}"/>
+      <div class="caption">
+       
+       <h3 style="text-transform: capitalize;"> {{roomtype.type_name}}</h3>
+        <p>
+        	<h5>{{roomtype.details}}</h5>
+        </p>
+      </div>
+    </div>
+  </div>
+
+	{% endfor %}
+
+
+
+
+</div>
+</div>
+<div class="row">
+
+</div>
+
+
+</div>
+
+{% include 'footer.html' %}
+<script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>
