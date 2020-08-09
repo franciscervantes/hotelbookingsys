@@ -20,8 +20,8 @@
 	
 
 		<div id="banner-text">
-			<p><img   src="{% static 'img/logo.png' %}"></p>
-			<p><a class="btn btn-primary"  id ="bookbtn" href= {% url 'book' %}> Book Now </a></p>
+			<p><img  id="logo" src="{% static 'img/logo.png' %}"></p>
+			<p><a class="user btn btn-primary"  id ="bookbtn" href= {% url 'book' %}> Book Now </a></p>
 			
 		</div>
 	</div>
@@ -60,10 +60,10 @@
       <img style="height: 30vh; width: 100%; object-fit: contain;" src="{{roomtype.image.url}}"/>
       <div class="caption">
        
-       <h3 style="text-transform: capitalize;"> {{roomtype.type_name}}</h3>
-        <p>
+       <h3 class="capitalize cursive center"> {{roomtype.type_name}}</h3>
+        <!-- <p>
         	<h5>{{roomtype.details}}</h5>
-        </p>
+        </p> -->
       </div>
     </div>
   </div>

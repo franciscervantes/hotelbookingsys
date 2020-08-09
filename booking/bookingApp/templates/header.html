@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default white">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
@@ -11,23 +11,26 @@
     </div>
     <div class="collapse navbar-collapse" id="main-menu">
       <ul class="nav navbar-nav">
-        <li{% if request.path == '/staff/reservation-list/' %} class="active"{% endif %}>
-          <a href="{% url 'reservation_list' %}">Reservations</a>
+        <li{% if request.path == '/staff/reservation-list/' %} class="active" {% endif %}>
+          <a class="white" href="{% url 'reservation_list' %}">Reservations</a>
         </li>
          <li{% if request.path == '/staff/roomtype-list/' %} class="active"{% endif %}>
-          <a href="{% url 'roomtype_list' %}">Room Types</a>
+          <a class="white" href="{% url 'roomtype_list' %}">Room Types</a>
         </li>
          <li{% if request.path == '/staff/room-list/' %} class="active"{% endif %}>
-          <a href="{% url 'room_list' %}">Rooms</a>
+          <a class="white" href="{% url 'room_list' %}">Rooms</a>
         </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right white">
         {% if user.is_authenticated %}
-        <li>
-             <a> Welcome,  {{ user.username }}!</a>
+
+        <li >
+             <a class="white"> Welcome,  {{ user.username }}!</a>
 
                
         </li>
         <li>
-          <a href= {% url 'admin_logout' %}> Log out</a>
+          <a class="white" href= {% url 'admin_logout' %}> Log out</a>
            
         </li>{% endif %}
       </ul>

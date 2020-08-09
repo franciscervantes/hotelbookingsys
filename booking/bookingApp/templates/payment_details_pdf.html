@@ -1,0 +1,158 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<!-- <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}">
+	<script src="{% static 'js/bootstrap.min.js' %}"></script> -->
+	<style>
+		.thanks{
+			
+			margin-left: 100px;
+		}
+		#banner{
+			
+			/*background-color: #DCD2C6;*/
+			width: 100%;
+		}
+		#banner-text p{
+			margin-left: 250px;
+		}
+
+		.title{
+			background-color: #ae8b71;
+			color:white;
+			height: 20px;
+			
+		}
+		.text{
+			background-color:  #DCD2C6;
+			color:black;
+			vertical-align: middle;
+		}
+		th, td { width:150px; text-align: center; }
+		h2{vertical-align: middle;}
+		td{
+			background-color: aliceblue;
+		}
+		.payment{
+			margin-left: 600px;
+			
+		}
+
+	</style>
+	
+	</head>
+<body>
+	<pdf:barcode  value="{{reservation.reservation_id}}" type="code128" humanreadable="1" align="middle" />
+	
+	<div id="banner">
+	<div id="banner-text">
+			<p><img   width="200" height="200" id="logo" src="{% static 'img/logo.png' %}"></p>
+			
+
+			
+		</div>
+	</div>
+<H2>LUNE SANCTUAIRE BOOKING DETAILS</H2>
+
+<div class="title"><h2 class="label"> PERSONAL INFORMATION</h2></div>
+<table>
+	<thead>
+		<tr>
+		<th> FIRST NAME </th>
+		<th> LAST NAME </th>
+		<th> CLIENT EMAIL </th>
+		<th> CLIENT PHONE </th>
+		</tr>
+		
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td> {{ reservation.first_name }}    </td>
+			<td> {{ reservation.last_name }}    </td>
+			<td> {{ reservation.client_email }} </td>
+			<td> {{ reservation.client_phone }}</td>
+			
+		</tr>
+		
+	</tbody>
+
+</table>
+
+
+<div class="text"><h2 class="label"> ROOM DETAILS</h2></div>
+<table>
+	<thead>
+		<tr>
+		<th> ROOM TYPE</th>
+		<th> ROOM NUMBER </th>
+		</tr>
+		
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td> {{ reservation.room_id.room_type_id }}    </td>
+			<td> {{ reservation.room_id.room_num }}    </td>
+			
+		</tr>
+		
+	</tbody>
+
+</table>
+
+<div class="title"><h2 class="label"> BOOKING DETAILS</h2></div>
+<table>
+	<thead>
+		<tr>
+		<th>RESERVATION ID </th>
+		<th> DATE IN </th>
+		<th> DATE OUT</th>
+		<th> TOTAL DAYS </th>
+		</tr>
+		
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td> {{ reservation.reservation_id }}   </td>
+			<td> {{ reservation.date_in }}   </td>
+			<td> {{ reservation.date_out }}   </td>
+			<td> {{ reservation.days }}  </td>
+			
+		</tr>
+		
+	</tbody>
+
+</table>
+
+<br>
+
+<div class="payment">
+	<hr>
+	<h4>Total Payment:</h4>
+	{{reservation.total_payment }} &nbsp; PHP
+
+</div>
+<br> <br><br><br><br><br>
+<br><br><br><br><br>
+<br> <br><br><br>
+
+<div class="thanks">
+	<p ><h2>-----------------------------  Thank you for booking at Lune Sanctuaire. -----------------------------</h2></p>
+</div>
+<br>
+
+
+
+
+
+
+
+
+</body>
+</html>

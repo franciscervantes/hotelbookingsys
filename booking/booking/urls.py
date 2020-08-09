@@ -40,6 +40,7 @@ urlpatterns = [
     path('staff/edit/<int:reservation_id>/', views.editReservation,name='edit_reservation'),
     path('request-availability/',views.requestAvailability, name='request_availability'),
     path('create-reservation/',views.createReservation, name='create_reservation'),
+    path('generate-pdf/<int:reservation_id>/', views.generatePdf, name='generate_pdf')
     
 
 

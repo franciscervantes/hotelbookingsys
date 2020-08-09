@@ -11,16 +11,21 @@
   //   });
   // });
 
-$(function() {
-  $('.login-form').animate({ height: '70vh' }, 1000, 'linear');
 
-});
 
+// $("#logo").load(function() {
+//   $(this).addClass("loaded");
+// });
 
 
 
 
 $(function () {
+  // $('#ui-datepicker-div').css('clip', 'auto'); 
+  $('.login-form').animate({ height: '70vh' }, 1000, 'linear');
+  $('#logo').addClass("animate");
+  $('#greet').addClass("animate-quote");
+    console.log("wat")
      $("#datein").datepicker({
          minDate: 0,
          dateFormat: "yy-mm-dd",
@@ -70,15 +75,22 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
         dataType: "json",
 
        },
+       beforeSend: function () {
+        $("#modal-reserve .modal-content").html("");
+        $("#modal-reserve").modal("show");
+      },
        
        success: function(data){
           // $('#output').html(data.msg) /* response message */
           console.log(data);
-          if(data.status == 'created')
+          if(data.status == 'created'){
             toastr.success('Successfully created');
-
+            $("#modal-reserve .modal-content").html(data.html_form);
+            // $("#booking").html(data.reservation);
+            // $("#modal-reserve").modal("hide");
+          }
           else{
-
+            $("#modal-reserve").modal("hide");
             toastr.error('Invalid Dates or Room Type Unavailable')
           }
        },

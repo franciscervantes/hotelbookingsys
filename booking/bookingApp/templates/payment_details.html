@@ -1,0 +1,31 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}">
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	</head>
+<body>
+
+	
+	<div id="banner">
+		<div id="thanks" style="padding-right: -25px">
+			<p><img   width="200" height="200" id="logo" src="{% static 'img/logo.png' %}"></p>
+			<p><h2>Thank you for booking at Lune Sanctuaire, <span class="capitalize">{{reservation.first_name}} {{reservation.last_name}}</span></h2></p>
+			<br>
+
+			<div class="alert alert-warning" role="alert">
+				<p style="font-size: 0.95em"><span class="label label-warning">Info</span>  &nbsp;&nbsp;Please click the button to generate your booking details.</p>	<br>
+				<form action="{% url 'generate_pdf' reservation_id=reservation.reservation_id %}" method="get">
+			 	<input class="btn btn-primary book-button" type="submit" name="Submit" value="Generate"  /></form>
+			</div>
+		</div>
+
+			
+	</div>
+
+
+

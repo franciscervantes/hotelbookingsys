@@ -7,8 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
+from xhtml2pdf import pisa 
+from datetime import datetime
+import os
+from tempfile import mkstemp
+from django.conf import settings
+from io import StringIO, BytesIO
+import cgi
 
 
 def homepage(request):
@@ -86,9 +93,17 @@ def requestAvailability(request):
 		return JsonResponse(response)
 
 # @csrf_exempt
+def get_days(date_in, date_out):
+	date_format = "%Y-%m-%d"
+	a = datetime.strptime(date_in, date_format)
+	b = datetime.strptime(date_out, date_format)
+	delta = b - a
+	return delta.days 
+
 def createReservation(request):
 	if request.method == 'POST':
 		# data = json.loads(request.body)
+		data = dict()
 		first_name = request.POST.get('first_name')
 		last_name = request.POST.get('last_name')
 		client_email = request.POST.get('client_email')
@@ -97,7 +112,9 @@ def createReservation(request):
 		date_out = request.POST.get('date_out')
 		room_id = request.POST.get('room_id')
 		rooms = Room.objects.filter(room_type_id = room_id)
-
+		days = get_days(date_in,date_out)
+		price = get_object_or_404(RoomType, pk=room_id).price
+		total_payment = days * price
 		available_room = check_availability(rooms,date_in,date_out,None)
 
 		if available_room:
@@ -109,13 +126,68 @@ def createReservation(request):
              	date_in = date_in, 
              	date_out = date_out,
              	room_id = available_room,
+             	days=days,
+             	total_payment=total_payment,
              	)
 			reservation.save()
-			response = {'status' : 'created'}
+			data['status'] = 'created'
+			# data['reservation'] = render_to_string('book.html', { 'reservation': reservation})
+			context = {'reservation': reservation}
+			data['html_form'] = render_to_string('payment_details.html', context, request=request)
+			html=render_to_string('payment_details.html', context, request=request)
+			
 		else:
-			response = {'status' : 'invalid'}
-		return JsonResponse(response)
+			
+			data['status'] = 'invalid'
+		return JsonResponse(data)
 
+def fetch_resources(uri, rel):
+    path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
+    print(path)
+
+    return path
+
+
+def generatePdf(request, reservation_id):
+	reservation = get_object_or_404(Reservation, pk=reservation_id)
+	context = {'reservation': reservation}
+	html=render_to_string('payment_details_pdf.html', context, request=request)
+	# file = open('test.pdf', "w+b")
+	# pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file,encoding='utf-8',link_callback=fetch_resources)
+	# file.seek(0)
+	# pdf = file.read()
+	# file.close()
+	# return HttpResponse(pdf, 'application/pdf')
+
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename=booking_details.pdf'
+	
+	pdf = pisa.CreatePDF(html, dest=response, link_callback=fetch_resources )
+	
+
+	
+	return response
+	# return HttpResponse('Gremlins ate your pdf! %s' % cgi.escape(html))
+
+
+# def generatePdf(request, reservation_id):
+# 	reservation = get_object_or_404(Reservation, pk=reservation_id)
+# 	context = {'reservation': reservation}
+# 	html=render_to_string('payment_details.html', context, request=request)
+# 	fid, fname = mkstemp(dir='/tmp')
+# 	f = open(fname, 'w+b')
+# 	f.write(html)
+# 	f.close()
+# 	cmd = 'xhtml2pdf "%s"' % fname
+# 	os.system(cmd)
+# 	os.unlink(fname)
+# 	filename = fname+'.pdf'
+# 	pdf = open(filename, 'r')
+# 	content = pdf.read()
+# 	pdf.close()
+# 	os.unlink(pdf.name)
+# 	response = HttpResponse(content, mimetype='application/pdf')
+# 	response['Content-Disposition'] = 'attachment; filename=draft.pdf'
 
 
 @login_required
@@ -132,6 +204,9 @@ def editReservation(request, reservation_id):
 		date_in = request.POST.get('date_in')
 		room_id = request.POST.get('room_id')
 		rooms = Room.objects.filter(room_type_id = room_id)
+		days = get_days(date_in,date_out)
+		price = get_object_or_404(RoomType, pk=room_id).price
+		total_payment = days * price
 		available_room = check_availability(rooms,date_in,date_out,reservation_id)
 		print(available_room)
 		if available_room:
@@ -142,6 +217,8 @@ def editReservation(request, reservation_id):
 			reservation.date_in = date_in
 			reservation.date_out = date_out
 			reservation.room_id = available_room
+			reservation.days = days
+			reservation.total_payment = total_payment
 			reservation.save()
 
 			# reservation_form = Reservation(

@@ -1,4 +1,5 @@
 {% load widget_tweaks %}
+{% load static %}
 
 {% for field in reservation_form %}
   <div class="form-group{% if field.errors %} has-error{% endif %}">
@@ -9,3 +10,6 @@
     {% endfor %}
   </div>
 {% endfor %}
+
+
+<script src="{% static 'js/datepicker.js' %}"></script>

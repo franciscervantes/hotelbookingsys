@@ -9,6 +9,8 @@
     <td>{{ reservation.room_id.room_num }}</td>
     <td>{{ reservation.date_in }}</td>
     <td>{{ reservation.date_out }}</td>
+    <td>{{ reservation.days }}</td>
+    <td>{{ reservation.total_payment }}</td>
     <!-- <td>{{ reservation.price }}</td> -->
     <td style="width: 200px">
       <button type="button"
@@ -28,3 +30,6 @@
     <td colspan="8" class="text-center bg-warning">No reservations</td>
   </tr>
 {% endfor %}
+
+
+ 
