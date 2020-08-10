@@ -20,7 +20,7 @@ import cgi
 
 def homepage(request):
 	roomtypes = RoomType.objects.all()
-	return render(request, 'home.html', {'roomtypes':roomtypes})
+	return render(request, 'public_user/base/home.html', {'roomtypes':roomtypes})
 
 # @csrf_exempt
 def book(request):
@@ -63,7 +63,7 @@ def book(request):
 # 				return render(request, 'book.html', {'reservation_form': reservation_form, 'room_type': room_type})
 		
 # 		messages.error(request, 'This room is not available on your selected dates!') 
-	return render(request, 'book.html', {'reservation_form': reservation_form, 'room_type': room_type })
+	return render(request, 'public_user/book/book.html', {'reservation_form': reservation_form, 'room_type': room_type })
 
 # @csrf_exempt
 def check_availability(rooms, date_in, date_out, reservation_id):
@@ -135,8 +135,8 @@ def createReservation(request):
 			reservation.save()
 			context = {'reservation': reservation}
 			data['status'] = 'created'
-			data['html_form'] = render_to_string('payment_details.html', context, request=request)
-			html=render_to_string('payment_details.html', context, request=request)
+			data['html_form'] = render_to_string('public_user/book/payment_details.html', context, request=request)
+			# html=render_to_string('payment_details.html', context, request=request)
 			
 		else:
 			if rooms:
@@ -145,7 +145,7 @@ def createReservation(request):
 				roomExists = False
 
 			context = {'reservation': reservation, 'roomExists':roomExists}
-			data['html_form'] = render_to_string('booking_error.html',context, request=request)
+			data['html_form'] = render_to_string('public_user/book/booking_error.html',context, request=request)
 			data['status'] = 'invalid'
 		return JsonResponse(data)
 
@@ -159,7 +159,7 @@ def fetch_resources(uri, rel):
 def generatePdf(request, reservation_id):
 	reservation = get_object_or_404(Reservation, pk=reservation_id)
 	context = {'reservation': reservation}
-	html=render_to_string('payment_details_pdf.html', context, request=request)
+	html=render_to_string('public_user/book/payment_details_pdf.html', context, request=request)
 	# file = open('test.pdf', "w+b")
 	# pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file,encoding='utf-8',link_callback=fetch_resources)
 	# file.seek(0)
@@ -202,15 +202,15 @@ def generatePdf(request, reservation_id):
 def editReservation(request, reservation_id):
 	reservation = get_object_or_404(Reservation, pk=reservation_id)
 	data = dict()
+	room_id = request.POST.get('room_id')
 	if request.method == 'POST':
-		reservation_form = ReservationForm(instance=reservation)
+		reservation_form = ReservationForm(instance=reservation, initial={'room_id':reservation.room_id.room_type_id})
 		first_name = request.POST.get('first_name')
 		last_name = request.POST.get('last_name')
 		client_email = request.POST.get('client_email')
 		client_phone = request.POST.get('client_phone')
 		date_out = request.POST.get('date_out')
 		date_in = request.POST.get('date_in')
-		room_id = request.POST.get('room_id')
 		rooms = Room.objects.filter(room_type_id = room_id)
 		days = get_days(date_in,date_out)
 		price = get_object_or_404(RoomType, pk=room_id).price
@@ -229,27 +229,18 @@ def editReservation(request, reservation_id):
 			reservation.total_payment = total_payment
 			reservation.save()
 
-			# reservation_form = Reservation(
-   #      		first_name = first_name,
-   #      		last_name = last_name,
-   #      		client_email =client_email,
-   #      		client_phone = client_phone,
-   #           	date_in = date_in, 
-   #           	date_out = date_out,
-   #           	room_id = available_room,
-   #           	)
-			# reservation_form.save()
 			data['valid_form'] = True
 			data['status'] = "created"
 			reservations_list = Reservation.objects.all()
-			data['reservation_list'] = render_to_string('view_reservations_list.html', { 'reservations': reservations_list})
+			data['reservation_list'] = render_to_string('admin/reservation/view_reservations_list.html', { 'reservations': reservations_list})
 		else:
 			data['status'] = "invalid"
 			data['valid_form'] = False
 	else:
-		reservation_form = ReservationForm(instance=reservation)
+		print(reservation.room_id.room_type_id.type_name)
+		reservation_form = ReservationForm(instance=reservation, initial={'room_id':reservation.room_id.room_type_id})
 	context = {'reservation_form': reservation_form}
-	data['html_form'] = render_to_string('edit_reservations.html', context, request=request)
+	data['html_form'] = render_to_string('admin/reservation/edit_reservations.html', context, request=request)
 	return JsonResponse(data)
 
 
@@ -262,11 +253,11 @@ def deleteReservation(request, reservation_id):
 			reservation.delete()
 			reservations_list = Reservation.objects.all()
 			data['status'] = "deleted"
-			data['reservation_list'] = render_to_string('view_reservations_list.html', { 'reservations': reservations_list})
+			data['reservation_list'] = render_to_string('admin/reservation/view_reservations_list.html', { 'reservations': reservations_list})
 		else:
 			context= {'reservation': reservation}
 			data['status'] = 'none'
-			data['html_form'] = render_to_string('delete_reservation.html', context, request=request)
+			data['html_form'] = render_to_string('admin/reservation/delete_reservation.html', context, request=request)
 		return JsonResponse(data)
 			
 @login_required
@@ -289,13 +280,13 @@ def createRoomtype(request):
 			roomtype.save()
 			data['status'] = "created roomtype"
 			roomtype_list = RoomType.objects.all()
-			data['room_type_list'] = render_to_string('view_roomtype_list.html', { 'roomtypes': roomtype_list})
+			data['room_type_list'] = render_to_string('admin/roomtype/view_roomtype_list.html', { 'roomtypes': roomtype_list})
 		else:
 			data['status'] = "invalid roomtype"
 	else:
 		roomtype_form = RoomTypeForm()
 	context = {'roomtype_form' : roomtype_form}
-	data['html_form'] = render_to_string('create_roomtype.html', context, request=request)
+	data['html_form'] = render_to_string('admin/roomtype/create_roomtype.html', context, request=request)
 	return JsonResponse(data)
 
 
@@ -315,7 +306,15 @@ def editRoomtype(request, room_type_id):
 		if not image:
 			image = roomtype.image
 
-		if not RoomType.objects.filter(type_name=type_name).exclude(pk=room_type_id).exists():	
+		if not RoomType.objects.filter(type_name=type_name).exclude(pk=room_type_id).exists():
+			select_room  = Room.objects.filter(room_type_id = room_type_id)
+			update_reserve = Reservation.objects.filter(room_id__in = select_room)
+
+			print(update_reserve)
+			for item in update_reserve:
+				total = int(item.days) * int(price)
+				item.total_payment = total
+				item.save()	
 			roomtype.type_name = type_name
 			roomtype.price = price
 			roomtype.details = details
@@ -325,7 +324,7 @@ def editRoomtype(request, room_type_id):
 			roomtype_list = RoomType.objects.all()
 			print(data['status'])
 			# data['image_url'] = roomtype.image.url
-			data['room_type_list'] = render_to_string('view_roomtype_list.html', { 'roomtypes': roomtype_list})
+			data['room_type_list'] = render_to_string('admin/roomtype/view_roomtype_list.html', { 'roomtypes': roomtype_list})
 		else:
 			data['status'] = 'invalid roomtype'
 
@@ -333,7 +332,7 @@ def editRoomtype(request, room_type_id):
 	else:
 		roomtype_form = RoomTypeForm(instance=roomtype)
 	context = {'roomtype_form': roomtype_form}
-	data['html_form'] = render_to_string('edit_roomtype.html', context, request=request)
+	data['html_form'] = render_to_string('admin/roomtype/edit_roomtype.html', context, request=request)
 	return JsonResponse(data)
 
 
@@ -346,11 +345,11 @@ def deleteRoomtype(request, room_type_id):
 			roomtype.delete()
 			roomtype_list = RoomType.objects.all()
 			data['status'] = "deleted roomtype"
-			data['roomtype_list'] = render_to_string('view_roomtype_list.html', { 'roomtypes': roomtype_list})
+			data['roomtype_list'] = render_to_string('admin/roomtype/view_roomtype_list.html', { 'roomtypes': roomtype_list})
 		else:
 			context= {'roomtype': roomtype}
 			data['status'] = 'none'
-			data['html_form'] = render_to_string('delete_roomtype.html', context, request=request)
+			data['html_form'] = render_to_string('admin/roomtype/delete_roomtype.html', context, request=request)
 		return JsonResponse(data)
 
 @login_required
@@ -372,13 +371,13 @@ def createRoom(request):
 			room.save()
 			data['status'] = "created room"
 			room_list = Room.objects.all()
-			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+			data['room_list'] = render_to_string('admin/room/view_room_list.html', { 'rooms': room_list})
 		else:
 			data['status'] = "invalid room"
 	else:
 		room_form = RoomForm()
 	context = {'room_form' : room_form}
-	data['html_form'] = render_to_string('create_room.html', context, request=request)
+	data['html_form'] = render_to_string('admin/room/create_room.html', context, request=request)
 	return JsonResponse(data)
 
 @login_required
@@ -393,12 +392,21 @@ def editRoom(request, room_id):
 		room_type = get_object_or_404(RoomType, pk=room_type_id)
 		print(room_type)
 		if not Room.objects.filter(room_num=room_num).exclude(pk=room_id).exists():	
+			
 			room.room_num = room_num
 			room.room_type_id = room_type
 			room.save()
+			select_room  = Room.objects.filter(room_type_id = room_type.room_type_id)
+			update_reserve = Reservation.objects.filter(room_id__in = select_room)
+
+			print(update_reserve)
+			for item in update_reserve:
+				total = int(item.days) * int(room_type.price)
+				item.total_payment = total
+				item.save()	
 			data['status'] ="edited room"
 			room_list = Room.objects.all()
-			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+			data['room_list'] = render_to_string('admin/room/view_room_list.html', { 'rooms': room_list})
 		else:
 			data['status'] = 'invalid room'
 
@@ -406,7 +414,7 @@ def editRoom(request, room_id):
 	else:
 		room_form = RoomForm(instance=room)
 	context = {'room_form': room_form}
-	data['html_form'] = render_to_string('edit_room.html', context, request=request)
+	data['html_form'] = render_to_string('admin/room/edit_room.html', context, request=request)
 	return JsonResponse(data)
 
 @login_required
@@ -418,11 +426,11 @@ def deleteRoom(request, room_id):
 			room.delete()
 			room_list = Room.objects.all()
 			data['status'] = "deleted room"
-			data['room_list'] = render_to_string('view_room_list.html', { 'rooms': room_list})
+			data['room_list'] = render_to_string('admin/room/view_room_list.html', { 'rooms': room_list})
 		else:
 			context= {'room': room}
 			data['status'] = 'none'
-			data['html_form'] = render_to_string('delete_room.html', context, request=request)
+			data['html_form'] = render_to_string('admin/room/delete_room.html', context, request=request)
 		return JsonResponse(data)
 
 
@@ -431,7 +439,7 @@ def deleteRoom(request, room_id):
 
 def adminLogin(request):
     if request.user.is_authenticated:
-        return render(request, 'admin_base.html')
+        return render(request, 'admin/base/admin_base.html')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -439,19 +447,19 @@ def adminLogin(request):
         if user is not None:
             login(request, user)
             isValid = "yes"
-            return render(request,'admin_base.html', {'isValid': isValid})
+            return render(request,'admin/base/admin_base.html', {'isValid': isValid})
         else:
             form = AuthenticationForm(request.POST)
             isValid = "no"
-            return render(request, 'admin_login.html', {'form': form, 'isValid': isValid})
+            return render(request, 'admin/base/admin_login.html', {'form': form, 'isValid': isValid})
     else:
         form = AuthenticationForm()
-        return render(request, 'admin_login.html', {'form': form})
+        return render(request, 'admin/base/admin_login.html', {'form': form})
 
 @login_required
 def adminDash(request):
 	if request.user.is_authenticated:
-		return render(request, 'admin_base.html')
+		return render(request, 'admin/base/admin_base.html')
 
 def adminLogout(request):
     logout(request)
@@ -460,16 +468,16 @@ def adminLogout(request):
 @login_required
 def reservations(request):
 	reservations = Reservation.objects.all()
-	return render(request, 'reservation_list.html', {'reservations':reservations})
+	return render(request, 'admin/reservation/reservation_list.html', {'reservations':reservations})
 
 @login_required
 def roomtypes(request):
 	roomtypes = RoomType.objects.all()
-	return render(request, 'roomtype_list.html', {'roomtypes':roomtypes})
+	return render(request, 'admin/roomtype/roomtype_list.html', {'roomtypes':roomtypes})
 @login_required
 def room(request):
 	rooms = Room.objects.all()
-	return render(request, 'room_list.html', {'rooms':rooms})
+	return render(request, 'admin/room/room_list.html', {'rooms':rooms})
 
 
 
