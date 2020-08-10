@@ -23,6 +23,9 @@ body{
     overflow-x: hidden;
     font-family: 'dm-reg';
 }
+.features{
+  margin-left: 10vh 
+}
 .capitalize{
     text-transform: capitalize;
 }

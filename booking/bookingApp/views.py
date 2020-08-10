@@ -22,64 +22,25 @@ def homepage(request):
 	roomtypes = RoomType.objects.all()
 	return render(request, 'public_user/base/home.html', {'roomtypes':roomtypes})
 
-# @csrf_exempt
 def book(request):
 	reservation_form = ReservationForm(request.POST or None)
 	room_type = RoomType.objects.all()
 	status = ""
-	
-
-# 	if request.method == 'POST':
-# 		# print(request.POST.get('first_name'))
-# 		first_name = request.POST.get('first_name')
-# 		last_name = request.POST.get('last_name')
-# 		client_email = request.POST.get('client_email')
-# 		client_phone = request.POST.get('client_phone')
-# 		date_in = request.POST.get('date_in')
-# 		date_out = request.POST.get('date_out')
-# 		room_id = request.POST.get('room_id')
-
-# 		rooms = Room.objects.filter(room_type_id = room_id)
-# 		for room in rooms:
-# 			date_out_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_in, date_out__gte=date_in).exists()
-# 			date_in_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_out, date_out__gte=date_out).exists()
-# 			date_intersect = Reservation.objects.filter(room_id=room, date_in__gte=date_in, date_out__lte=date_out).exists()
-# 			# date_intersect = Reservation.objects.filter(room_id=room, date_in__gte=date_in, date_out__lte=date_out).exists()
-
-# 			if not(date_out_intersect or date_in_intersect or date_intersect):
-# 				reservation = Reservation(
-#             		first_name = first_name,
-#             		last_name = last_name,
-#             		client_email =client_email,
-#             		client_phone = client_phone,
-# 	             	date_in = date_in, 
-# 	             	date_out = date_out,
-# 	             	room_id = room,
-# 	             	)
-# 				reservation.save()
-# 				status = "Room sucessfully booked"
-# 				messages.success(request, 'Room sucessfully booked!') 
-
-# 				return render(request, 'book.html', {'reservation_form': reservation_form, 'room_type': room_type})
-		
-# 		messages.error(request, 'This room is not available on your selected dates!') 
 	return render(request, 'public_user/book/book.html', {'reservation_form': reservation_form, 'room_type': room_type })
 
-# @csrf_exempt
+
 def check_availability(rooms, date_in, date_out, reservation_id):
 	print(reservation_id)
 	for room in rooms:
 		date_out_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_in, date_out__gte=date_in).exclude(pk=reservation_id).exists()
 		date_in_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_out, date_out__gte=date_out).exclude(pk=reservation_id).exists()
 		date_intersect = Reservation.objects.filter(room_id=room, date_in__gte=date_in, date_out__lte=date_out).exclude(pk=reservation_id).exists()
-		# date_intersect = Reservation.objects.filter(room_id=room, date_in__gte=date_in, date_out__lte=date_out).exists()
 		if not(date_out_intersect or date_in_intersect or date_intersect):
 			return room
 	return None
 @csrf_exempt
 def requestAvailability(request):
 	if request.method == 'POST':
-		# data = json.loads(request.body)
 
 		date_in = request.POST.get("date_in")
 		date_out = request.POST.get("date_out")
@@ -92,7 +53,6 @@ def requestAvailability(request):
 			response = {'status' : 'unavailable'}
 		return JsonResponse(response)
 
-# @csrf_exempt
 def get_days(date_in, date_out):
 	date_format = "%Y-%m-%d"
 	a = datetime.strptime(date_in, date_format)
@@ -160,12 +120,6 @@ def generatePdf(request, reservation_id):
 	reservation = get_object_or_404(Reservation, pk=reservation_id)
 	context = {'reservation': reservation}
 	html=render_to_string('public_user/book/payment_details_pdf.html', context, request=request)
-	# file = open('test.pdf', "w+b")
-	# pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file,encoding='utf-8',link_callback=fetch_resources)
-	# file.seek(0)
-	# pdf = file.read()
-	# file.close()
-	# return HttpResponse(pdf, 'application/pdf')
 
 	response = HttpResponse(content_type='application/pdf')
 	response['Content-Disposition'] = 'attachment; filename=booking_details.pdf'
@@ -175,27 +129,7 @@ def generatePdf(request, reservation_id):
 
 	
 	return response
-	# return HttpResponse('Gremlins ate your pdf! %s' % cgi.escape(html))
 
-
-# def generatePdf(request, reservation_id):
-# 	reservation = get_object_or_404(Reservation, pk=reservation_id)
-# 	context = {'reservation': reservation}
-# 	html=render_to_string('payment_details.html', context, request=request)
-# 	fid, fname = mkstemp(dir='/tmp')
-# 	f = open(fname, 'w+b')
-# 	f.write(html)
-# 	f.close()
-# 	cmd = 'xhtml2pdf "%s"' % fname
-# 	os.system(cmd)
-# 	os.unlink(fname)
-# 	filename = fname+'.pdf'
-# 	pdf = open(filename, 'r')
-# 	content = pdf.read()
-# 	pdf.close()
-# 	os.unlink(pdf.name)
-# 	response = HttpResponse(content, mimetype='application/pdf')
-# 	response['Content-Disposition'] = 'attachment; filename=draft.pdf'
 
 
 @login_required
@@ -460,7 +394,7 @@ def adminLogin(request):
 def adminDash(request):
 	if request.user.is_authenticated:
 		return render(request, 'admin/base/admin_base.html')
-
+@login_required
 def adminLogout(request):
     logout(request)
     return redirect('/')
@@ -479,7 +413,3 @@ def room(request):
 	rooms = Room.objects.all()
 	return render(request, 'admin/room/room_list.html', {'rooms':rooms})
 
-
-
-
-# Create your views here.
