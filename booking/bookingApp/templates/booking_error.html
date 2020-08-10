@@ -1,0 +1,29 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}">
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	</head>
+<body>
+
+	
+	<div id="banner">
+		<div id="thanks" style="padding-right: -25px">
+			<p><img   width="200" height="200" id="logo" src="{% static 'img/logo.png' %}"></p>
+			{% if roomExists %}
+			<p><h2>We're sorry. The room is unavailable for the selected dates. </h2></p>
+			{% else %}
+			<p><h2>We're sorry. The selected room is currently unavailable.</h2></p>
+			{% endif %}
+			<br>
+			<br>
+			<button type="button" class="book-button btn btn-primary" data-dismiss="modal">Close</button>
+			
+		</div>
+
+			
+	</div>

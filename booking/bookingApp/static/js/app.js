@@ -90,8 +90,10 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
             // $("#modal-reserve").modal("hide");
           }
           else{
-            $("#modal-reserve").modal("hide");
+            // $("#modal-reserve").modal("hide");
             toastr.error('Invalid Dates or Room Type Unavailable')
+             $("#modal-reserve .modal-content").html(data.html_form);
+
           }
        },
 
@@ -258,37 +260,41 @@ var saveRoomType = function () {
   $("#modal-reserve").on("submit", ".js-roomtype-create-form", saveRoomType);
 
 
-  //search
-//   $("#searchInput").keyup(function () {
-//     //split the current value of searchInput
-//     var data = this.value.split(" ");
-//     //create a jquery object of the rows
-//     var jo = $("#fbody").find("tr");
-//     if (this.value == "") {
-//         jo.show();
-//         return;
-//     }
-//     //hide all the rows
-//     jo.hide();
+ 
+  $("#searchInput").keyup(function () {
+    //split the current value of searchInput
+    var data = this.value.split(" ");
+    //create a jquery object of the rows
+    var jo = $("#data-list").find("tr");
+    if (this.value == "") {
+        jo.show();
+        return;
+    }
+    //hide all the rows
+    jo.hide();
 
-//     //Recusively filter the jquery object to get results.
-//     jo.filter(function (i, v) {
-//         var $t = $(this);
-//         for (var d = 0; d < data.length; ++d) {
-//             if ($t.text().toLowerCase().indexOf(data[d].toLowerCase()) > -1) {
-//                 return true;
-//             }
-//         }
-//         return false;
-//     })
-//     //show the rows that match.
-//     .show();
-// }).focus(function () {
-//     this.value = "";
-//     $(this).css({
-//         "color": "black"
-//     });
-//     $(this).unbind('focus');
-// }).css({
-//     "color": "#C0C0C0"
-// });
+    //Recusively filter the jquery object to get results.
+    jo.filter(function (i, v) {
+        var $t = $(this);
+        for (var d = 0; d < data.length; ++d) {
+            if ($t.text().toLowerCase().indexOf(data[d].toLowerCase()) > -1) {
+                return true;
+            }
+        }
+        return false;
+    })
+    //show the rows that match.
+    .show();
+}).focus(function () {
+    this.value = "";
+    $(this).css({
+        "color": "black"
+    });
+    $(this).unbind('focus');
+}).css({
+    "color": "#C0C0C0",
+    "height": "30px",
+    "width" : "50vh",
+    "font-size": "20px",
+    "vertical-align": "middle",
+});

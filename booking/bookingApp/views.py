@@ -112,13 +112,12 @@ def createReservation(request):
 		date_out = request.POST.get('date_out')
 		room_id = request.POST.get('room_id')
 		rooms = Room.objects.filter(room_type_id = room_id)
+		print(rooms)
 		days = get_days(date_in,date_out)
 		price = get_object_or_404(RoomType, pk=room_id).price
 		total_payment = days * price
 		available_room = check_availability(rooms,date_in,date_out,None)
-
-		if available_room:
-			reservation = Reservation(
+		reservation = Reservation(
         		first_name = first_name,
         		last_name = last_name,
         		client_email =client_email,
@@ -129,15 +128,24 @@ def createReservation(request):
              	days=days,
              	total_payment=total_payment,
              	)
+		
+
+		if available_room:
+			
 			reservation.save()
-			data['status'] = 'created'
-			# data['reservation'] = render_to_string('book.html', { 'reservation': reservation})
 			context = {'reservation': reservation}
+			data['status'] = 'created'
 			data['html_form'] = render_to_string('payment_details.html', context, request=request)
 			html=render_to_string('payment_details.html', context, request=request)
 			
 		else:
-			
+			if rooms:
+				roomExists = True
+			else:
+				roomExists = False
+
+			context = {'reservation': reservation, 'roomExists':roomExists}
+			data['html_form'] = render_to_string('booking_error.html',context, request=request)
 			data['status'] = 'invalid'
 		return JsonResponse(data)
 

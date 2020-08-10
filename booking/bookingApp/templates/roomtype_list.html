@@ -21,6 +21,11 @@
     </button>
   </p>
 
+  <div class="input-group input-group-md search">
+    <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-search"></span></span>
+    <input type="text"  id="searchInput" class="form-control search" placeholder="Type to Filter" aria-describedby="sizing-addon1">
+  </div>
+
   <table class="table" id="reserve-table">
     <thead>
       <tr>
@@ -31,7 +36,7 @@
         <th>Image</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="data-list">
      {% include 'view_roomtype_list.html' %}
     </tbody>
   </table>

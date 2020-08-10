@@ -12,7 +12,12 @@
 {% endblock %}
 
 {% block content %}
+
   <h1 class="page-header">Reservations</h1>
+  <div class="input-group input-group-md search">
+    <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-search"></span></span>
+    <input type="text"  id="searchInput" class="form-control search" placeholder="Type to Filter" aria-describedby="sizing-addon1">
+  </div>
 
 <!--   <p>
     <button type="button" class="btn btn-primary js-create-book" data-url="">
@@ -40,7 +45,7 @@
         <th></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="data-list">
      {% include 'view_reservations_list.html' %}
     </tbody>
   </table>
