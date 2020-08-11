@@ -3,6 +3,8 @@ from .models import *
 class DateInput(forms.DateInput):
     input_type = 'date'
 
+
+#generates reservation forms with dropdown list based on available roomtypes
 class ReservationForm(forms.ModelForm):
 	
 	first_name = forms.CharField(label='First name', max_length=128)
@@ -39,7 +41,6 @@ class RoomForm(forms.ModelForm):
 
 
 
-# user = User.objects.create_user(username='admin1234', password='admin')
 
 
     

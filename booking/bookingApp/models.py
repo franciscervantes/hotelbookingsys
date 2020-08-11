@@ -10,6 +10,7 @@ from django.db import models
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+
 from django.db import models
 
 class Admin(models.Model):
@@ -47,7 +48,7 @@ class Reservation(models.Model):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128) 
     client_email = models.CharField(max_length=128)
-    client_phone = models.IntegerField(blank=True, null=True)
+    client_phone = models.BigIntegerField(blank=True, null=True)
     room_id = models.ForeignKey('Room', on_delete=models.CASCADE)
     date_in = models.DateField()
     date_out = models.DateField()
@@ -57,17 +58,6 @@ class Reservation(models.Model):
     class Meta:
         db_table = 'reservation'
 
-
-
-# class PaymentDetails(models.Model):
-#     payment_details_id = models.AutoField(primary_key=True)
-#     reservation_id = models.ForeignKey('Reservation', on_delete=models.DO_NOTHING)
-#     value = models.IntegerField()
-#     days = models.IntegerField()
-#     total = models.IntegerField()
-
-#     class Meta:
-#         db_table = 'payment_details'
 
 
 

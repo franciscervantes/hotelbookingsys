@@ -17,20 +17,20 @@ from django.conf import settings
 from io import StringIO, BytesIO
 import cgi
 
-
+#render homepage with room type objects
 def homepage(request):
 	roomtypes = RoomType.objects.all()
 	return render(request, 'public_user/base/home.html', {'roomtypes':roomtypes})
-
+#render user booking page with forms generated from django forms and roomtype objects
 def book(request):
 	reservation_form = ReservationForm(request.POST or None)
 	room_type = RoomType.objects.all()
 	status = ""
 	return render(request, 'public_user/book/book.html', {'reservation_form': reservation_form, 'room_type': room_type })
 
-
+#check the availability of rooms based on a given range of dates
+#the check function excludes passed reservations when accessed through the edit function
 def check_availability(rooms, date_in, date_out, reservation_id):
-	print(reservation_id)
 	for room in rooms:
 		date_out_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_in, date_out__gte=date_in).exclude(pk=reservation_id).exists()
 		date_in_intersect = Reservation.objects.filter(room_id=room, date_in__lte=date_out, date_out__gte=date_out).exclude(pk=reservation_id).exists()
@@ -38,6 +38,7 @@ def check_availability(rooms, date_in, date_out, reservation_id):
 		if not(date_out_intersect or date_in_intersect or date_intersect):
 			return room
 	return None
+#return room availability as a response to ajax calls
 @csrf_exempt
 def requestAvailability(request):
 	if request.method == 'POST':
@@ -52,17 +53,17 @@ def requestAvailability(request):
 		else:
 			response = {'status' : 'unavailable'}
 		return JsonResponse(response)
-
+#get number of days based on a given range
 def get_days(date_in, date_out):
 	date_format = "%Y-%m-%d"
 	a = datetime.strptime(date_in, date_format)
 	b = datetime.strptime(date_out, date_format)
 	delta = b - a
 	return delta.days 
-
+#create user reservation if room is available for the selected dates
+#returns user-friendly modals for either success or failed attempts at booking
 def createReservation(request):
 	if request.method == 'POST':
-		# data = json.loads(request.body)
 		data = dict()
 		first_name = request.POST.get('first_name')
 		last_name = request.POST.get('last_name')
@@ -72,7 +73,6 @@ def createReservation(request):
 		date_out = request.POST.get('date_out')
 		room_id = request.POST.get('room_id')
 		rooms = Room.objects.filter(room_type_id = room_id)
-		print(rooms)
 		days = get_days(date_in,date_out)
 		price = get_object_or_404(RoomType, pk=room_id).price
 		total_payment = days * price
@@ -96,7 +96,7 @@ def createReservation(request):
 			context = {'reservation': reservation}
 			data['status'] = 'created'
 			data['html_form'] = render_to_string('public_user/book/payment_details.html', context, request=request)
-			# html=render_to_string('payment_details.html', context, request=request)
+	
 			
 		else:
 			if rooms:
@@ -108,14 +108,14 @@ def createReservation(request):
 			data['html_form'] = render_to_string('public_user/book/booking_error.html',context, request=request)
 			data['status'] = 'invalid'
 		return JsonResponse(data)
-
+#returns the absolute path of static urls of the project
 def fetch_resources(uri, rel):
     path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
-    print(path)
 
     return path
 
-
+#generates pdf based on a passed reservation through xhtml2pdf
+#the pdf that will be generated will come from an html file populated by the current reservation context
 def generatePdf(request, reservation_id):
 	reservation = get_object_or_404(Reservation, pk=reservation_id)
 	context = {'reservation': reservation}
@@ -126,12 +126,10 @@ def generatePdf(request, reservation_id):
 	
 	pdf = pisa.CreatePDF(html, dest=response, link_callback=fetch_resources )
 	
-
-	
 	return response
 
 
-
+#edits reservation and re-calculates total payment details
 @login_required
 def editReservation(request, reservation_id):
 	reservation = get_object_or_404(Reservation, pk=reservation_id)
@@ -150,7 +148,6 @@ def editReservation(request, reservation_id):
 		price = get_object_or_404(RoomType, pk=room_id).price
 		total_payment = days * price
 		available_room = check_availability(rooms,date_in,date_out,reservation_id)
-		print(available_room)
 		if available_room:
 			reservation.first_name = first_name
 			reservation.last_name = last_name
@@ -171,13 +168,12 @@ def editReservation(request, reservation_id):
 			data['status'] = "invalid"
 			data['valid_form'] = False
 	else:
-		print(reservation.room_id.room_type_id.type_name)
 		reservation_form = ReservationForm(instance=reservation, initial={'room_id':reservation.room_id.room_type_id})
 	context = {'reservation_form': reservation_form}
 	data['html_form'] = render_to_string('admin/reservation/edit_reservations.html', context, request=request)
 	return JsonResponse(data)
 
-
+#deletes reservation
 @login_required
 def deleteReservation(request, reservation_id):
 	if request.user.is_authenticated:
@@ -193,7 +189,8 @@ def deleteReservation(request, reservation_id):
 			data['status'] = 'none'
 			data['html_form'] = render_to_string('admin/reservation/delete_reservation.html', context, request=request)
 		return JsonResponse(data)
-			
+#handles creation of roomtypes with the option to upload images which is passed through request.FILES
+#the image is saved within the project directory and its url is saved in the database
 @login_required
 def createRoomtype(request):
 	data =  dict()
@@ -204,7 +201,6 @@ def createRoomtype(request):
 		details = request.POST.get('details')
 		image = request.FILES.get('image')
 		if  not RoomType.objects.filter(type_name=type_name).exists():
-			print("hi")
 			roomtype = RoomType(
 				type_name = type_name,
 				price = price,
@@ -225,11 +221,10 @@ def createRoomtype(request):
 
 
 
-
+#edits roomtypes and updates payment details of reservations
 @login_required
 def editRoomtype(request, room_type_id):
 	roomtype = get_object_or_404(RoomType, pk=room_type_id)
-	print(roomtype)
 	data = dict()
 	if request.method == 'POST':
 		roomtype_form = RoomTypeForm(instance=roomtype)
@@ -244,7 +239,6 @@ def editRoomtype(request, room_type_id):
 			select_room  = Room.objects.filter(room_type_id = room_type_id)
 			update_reserve = Reservation.objects.filter(room_id__in = select_room)
 
-			print(update_reserve)
 			for item in update_reserve:
 				total = int(item.days) * int(price)
 				item.total_payment = total
@@ -256,8 +250,6 @@ def editRoomtype(request, room_type_id):
 			roomtype.save()
 			data['status'] ="edited roomtype"
 			roomtype_list = RoomType.objects.all()
-			print(data['status'])
-			# data['image_url'] = roomtype.image.url
 			data['room_type_list'] = render_to_string('admin/roomtype/view_roomtype_list.html', { 'roomtypes': roomtype_list})
 		else:
 			data['status'] = 'invalid roomtype'
@@ -269,7 +261,7 @@ def editRoomtype(request, room_type_id):
 	data['html_form'] = render_to_string('admin/roomtype/edit_roomtype.html', context, request=request)
 	return JsonResponse(data)
 
-
+#deletes all reservation and rooms that contains a specific roomtype that is being deletd 
 @login_required
 def deleteRoomtype(request, room_type_id):
 	if request.user.is_authenticated:
@@ -286,6 +278,8 @@ def deleteRoomtype(request, room_type_id):
 			data['html_form'] = render_to_string('admin/roomtype/delete_roomtype.html', context, request=request)
 		return JsonResponse(data)
 
+#create rooms with unique room numbers
+#create rooms based on roomtypes
 @login_required
 def createRoom(request):
 	data =  dict()
@@ -293,11 +287,9 @@ def createRoom(request):
 		room_form = RoomForm(request.POST)
 		room_num = request.POST.get('room_num')
 		room_type_id = request.POST.get('room_type_id')
-		# room_type = RoomType.objects.filter(pk=room_type_id)
 		room_type = get_object_or_404(RoomType, pk=room_type_id)
 
 		if not Room.objects.filter(room_num=room_num).exists():
-			print("helO")
 			room = Room(
 				room_num = room_num,
 				room_type_id = room_type
@@ -314,6 +306,7 @@ def createRoom(request):
 	data['html_form'] = render_to_string('admin/room/create_room.html', context, request=request)
 	return JsonResponse(data)
 
+#edit rooms and update payment details of reservations
 @login_required
 def editRoom(request, room_id):
 	room = get_object_or_404(Room, pk=room_id)
@@ -324,7 +317,6 @@ def editRoom(request, room_id):
 		room_type_id = request.POST.get('room_type_id')
 
 		room_type = get_object_or_404(RoomType, pk=room_type_id)
-		print(room_type)
 		if not Room.objects.filter(room_num=room_num).exclude(pk=room_id).exists():	
 			
 			room.room_num = room_num
@@ -333,7 +325,6 @@ def editRoom(request, room_id):
 			select_room  = Room.objects.filter(room_type_id = room_type.room_type_id)
 			update_reserve = Reservation.objects.filter(room_id__in = select_room)
 
-			print(update_reserve)
 			for item in update_reserve:
 				total = int(item.days) * int(room_type.price)
 				item.total_payment = total
@@ -351,6 +342,7 @@ def editRoom(request, room_id):
 	data['html_form'] = render_to_string('admin/room/edit_room.html', context, request=request)
 	return JsonResponse(data)
 
+#also deletes reservations using the room that is being deleted
 @login_required
 def deleteRoom(request, room_id):
 	if request.user.is_authenticated:
@@ -368,9 +360,8 @@ def deleteRoom(request, room_id):
 		return JsonResponse(data)
 
 
-
-
-
+#required to access admin functions with the 'login_required' tag
+#users accessing admin pages without logging-in will be redirected to the login page
 def adminLogin(request):
     if request.user.is_authenticated:
         return render(request, 'admin/base/admin_base.html')
@@ -390,15 +381,17 @@ def adminLogin(request):
         form = AuthenticationForm()
         return render(request, 'admin/base/admin_login.html', {'form': form})
 
+#when the user logs-in for the first time, they will be redirected to this page
 @login_required
 def adminDash(request):
 	if request.user.is_authenticated:
 		return render(request, 'admin/base/admin_base.html')
+#logs-out admin
 @login_required
 def adminLogout(request):
     logout(request)
     return redirect('/')
-
+#other admin views which requires authentication
 @login_required
 def reservations(request):
 	reservations = Reservation.objects.all()

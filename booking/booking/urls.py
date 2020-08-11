@@ -21,9 +21,8 @@ from django.conf.urls.static import static
 app_name = 'booking'
 
 urlpatterns = [
+    #admin urls
     path('admin/', admin.site.urls),
-    path('', views.homepage, name='homepage'),
-    path('book/',views.book, name='book'),
     path('staff/login/', views.adminLogin, name='admin_login'),
     path('staff/dashboard/', views.adminDash, name='admin_dash'),
     path('staff/reservation-list/', views.reservations, name="reservation_list"),
@@ -38,6 +37,10 @@ urlpatterns = [
     path('staff/delete/<int:reservation_id>/', views.deleteReservation, name='delete_reservation'),
     path('staff/logout',views.adminLogout, name='admin_logout'),
     path('staff/edit/<int:reservation_id>/', views.editReservation,name='edit_reservation'),
+
+    #public user urls
+    path('', views.homepage, name='homepage'),
+    path('book/',views.book, name='book'),
     path('request-availability/',views.requestAvailability, name='request_availability'),
     path('create-reservation/',views.createReservation, name='create_reservation'),
     path('generate-pdf/<int:reservation_id>/', views.generatePdf, name='generate_pdf')

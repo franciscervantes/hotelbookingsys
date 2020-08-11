@@ -1,31 +1,13 @@
 
 
 
-
-  // $(function() {
-  //   $( ".datepicker" ).datepicker({
-  //      dateFormat: "yy-mm-dd",
-  //     changeMonth: true,
-  //     changeYear: true,
-  //     minDate: 0,
-  //   });
-  // });
-
-
-
-// $("#logo").load(function() {
-//   $(this).addClass("loaded");
-// });
-
-
-
+//function to initialize the jquery datepicker
+//date-in and date-out's available inputs are changed whenever a date is inputted
 
 $(function () {
-  // $('#ui-datepicker-div').css('clip', 'auto'); 
   $('.login-form').animate({ height: '70vh' }, 1000, 'linear');
   $('#logo').addClass("animate");
   $('#greet').addClass("animate-quote");
-    console.log("wat")
      $("#datein").datepicker({
          minDate: 0,
          dateFormat: "yy-mm-dd",
@@ -51,9 +33,12 @@ $(function () {
              $("#datein").datepicker("option", "maxDate", maxDate);
          }
      });
-     // $("#id_room_id").value()
  });
 
+
+//ajax function to post and create reservations
+//returns error modal when room is not available
+//returns success modal when room is available
 
 $('#reservation-form').on('submit', function(e){
 
@@ -81,16 +66,12 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
       },
        
        success: function(data){
-          // $('#output').html(data.msg) /* response message */
           console.log(data);
           if(data.status == 'created'){
             toastr.success('Successfully created');
             $("#modal-reserve .modal-content").html(data.html_form);
-            // $("#booking").html(data.reservation);
-            // $("#modal-reserve").modal("hide");
           }
           else{
-            // $("#modal-reserve").modal("hide");
             toastr.error('Invalid Dates or Room Type Unavailable')
              $("#modal-reserve .modal-content").html(data.html_form);
 
@@ -104,13 +85,12 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
 
    });
 
-
-
-
-
 });  
 
+//the load function loads the modals containing the forms that are being edited
+//which is acquired through a get request
 
+//the save function sends a post request when the form is submitted
 
    var loadForm = function () {
     console.log("hi");
@@ -174,7 +154,6 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
 
         
         else {
-          // console.log("nani2");
           toastr.error('Invalid');
           $("#modal-reserve .modal-content").html(data.html_form);
         }
@@ -186,7 +165,7 @@ token = $("#reservation-form").find('input[name=csrfmiddlewaretoken]').val();
     return false;
   };
 
-
+//handles image uploads within the ajax call
 var saveRoomType = function () {
     console.log("here");
     var form = $(this);
@@ -202,7 +181,6 @@ var saveRoomType = function () {
     formData.append('details', $details)
 
     formData.append('csrfmiddlewaretoken', token);
-    // console.log(token);
     $.ajax({
       url: form.attr("data-url"),
       data: formData,
@@ -211,7 +189,6 @@ var saveRoomType = function () {
       dataType: 'json',
       
       success: function (data) {
-        console.log(data.status);
         if(data.status == 'edited roomtype'){
           toastr.success('Roomtype Successfully Edited');
           $("#reserve-table tbody").html(data.room_type_list);
@@ -228,7 +205,6 @@ var saveRoomType = function () {
 
         
         else {
-          // console.log("nani2");
           toastr.error('Invalid');
           $("#modal-reserve .modal-content").html(data.html_form);
         }
@@ -248,19 +224,20 @@ var saveRoomType = function () {
   $(".js-create-reserve").click(loadForm);
   $("#modal-reserve").on("submit", ".js-reserve-create-form", saveForm);
 
-  // Update book
+  // Edit reservation
   $("#reserve-table").on("click", ".js-update-reserve", loadForm);
   $("#modal-reserve").on("submit", ".js-reserve-update-form", saveForm);
 
-  // Delete book
+  // Delete reservation
   $("#reserve-table").on("click", ".js-delete-reserve", loadForm);
   $("#modal-reserve").on("submit", ".js-reserve-delete-form", saveForm);
 
+  //separate function for creating and editing roomtypes to facilitate image uploads within the ajax calss
     $(".js-create-reserve").click(loadForm);
   $("#modal-reserve").on("submit", ".js-roomtype-create-form", saveRoomType);
 
 
- 
+ //search filtering of the admin tables
   $("#searchInput").keyup(function () {
     //split the current value of searchInput
     var data = this.value.split(" ");
