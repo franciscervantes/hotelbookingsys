@@ -17,6 +17,10 @@ from django.conf import settings
 from io import StringIO, BytesIO
 import cgi
 
+#create booking system admin
+from django.contrib.auth.models import User
+user = User.objects.create_user(username = 'admin1234', password ='admin')
+
 #render homepage with room type objects
 def homepage(request):
 	roomtypes = RoomType.objects.all()
