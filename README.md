@@ -12,6 +12,7 @@ venv/Scripts/activate
 Install dependencies
 
 ```bash
+cd booking
 pip install -r requirements.txt
 
 ```
@@ -24,7 +25,6 @@ CREATE DATABASE bookingapp;
 ```
 Run database migrations
 ```bash
-cd booking
 python manage.py migrate
 ```
 Run server
